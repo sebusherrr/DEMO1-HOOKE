@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abingdon School Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,480;9..144,560;9..144,620&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --color-primary:#E64097; --color-primary-hover:#C9337F; --color-primary-soft:#FCE8F1;
+  --color-black:#1A1A1A; --color-steel:#80A1B6; --color-steel-dark:#5C7F94; --color-steel-soft:#EAF0F3;
+  --color-silver:#B2B2B2; --color-silver-soft:#E9E9E7;
+  --color-bg:#F6F7F6; --color-surface:#FFFFFF; --color-glass:rgba(255,255,255,0.66);
+  --color-text:#1A1A1A; --color-text-2:#5A5D5C; --color-text-3:#8B8E8D; --color-border:#E3E4E2;
+  --color-success:#2F7D5A; --color-warning:#946200; --color-error:#C0392B;
+  --shadow-card:0 1px 2px rgba(26,26,26,.06),0 6px 16px rgba(26,26,26,.06);
+  --shadow-glass:0 8px 30px rgba(26,26,26,.10);
+  --radius-sm:8px; --radius-md:12px; --radius-lg:18px;
+  --ease:cubic-bezier(.2,.7,.3,1);
+  --font-display:'Fraunces',Georgia,serif; --font-body:'Inter',-apple-system,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;} button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+.container{max-width:1400px;margin:0 auto;padding:0 32px;}
+@media (max-width:768px){.container{padding:0 16px;}}
+.hidden{display:none !important;}
+.badge{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:var(--radius-sm);letter-spacing:.02em;}
+.badge.demo{background:var(--color-warning);color:#fff;}
+.notice{background:var(--color-steel-soft);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:12px 16px;font-size:13px;color:var(--color-text-2);margin-bottom:18px;}
+.notice.warn{background:#FBF1DD;}
+.btn{border:none;border-radius:var(--radius-sm);padding:10px 16px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary{background:var(--color-primary);color:#fff;}
+.btn-primary:hover{background:var(--color-primary-hover);}
+.btn-secondary{background:transparent;border:1.5px solid var(--color-steel);color:var(--color-steel-dark);}
+.btn-outline{background:var(--color-surface);border:1px solid var(--color-border);color:var(--color-text);}
+.btn-danger{background:transparent;border:1.5px solid var(--color-error);color:var(--color-error);}
+.btn-tertiary{background:transparent;color:var(--color-text-2);font-weight:600;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+label{font-size:12.5px;font-weight:600;color:var(--color-text-2);display:block;margin-bottom:5px;}
+input[type=text],input[type=email],input[type=password],input[type=number],input[type=date],select,textarea{
+  width:100%;border:1px solid var(--color-border);background:var(--color-surface);border-radius:var(--radius-sm);
+  padding:10px 12px;font-size:14px;color:var(--color-text);outline:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--color-primary);}
+.field{margin-bottom:14px;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--color-black);color:#fff;
+  padding:12px 20px;border-radius:var(--radius-md);font-size:13.5px;z-index:999;box-shadow:0 10px 26px rgba(0,0,0,.25);
+  opacity:0;pointer-events:none;transition:opacity .2s;}
+.toast.show{opacity:1;}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px;}
+
+/* ---------- LOGIN ---------- */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;
+  background:radial-gradient(circle at 20% 20%, rgba(230,64,151,.10), transparent 45%), radial-gradient(circle at 80% 80%, rgba(128,161,182,.14), transparent 45%), var(--color-bg);}
+.login-card{width:100%;max-width:400px;background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-glass);padding:36px 32px;}
+.login-crest{width:44px;height:44px;border-radius:12px;background:var(--color-primary);color:#fff;display:flex;align-items:center;
+  justify-content:center;font-family:var(--font-display);font-size:20px;font-weight:620;margin-bottom:16px;}
+.login-card h1{font-family:var(--font-display);font-size:23px;font-weight:560;margin:0 0 4px;}
+.login-card .sub{color:var(--color-text-2);font-size:13.5px;margin-bottom:22px;}
+.audience-toggle{display:flex;background:var(--color-silver-soft);border-radius:var(--radius-md);padding:3px;margin-bottom:22px;}
+.audience-toggle button{flex:1;padding:8px 0;border-radius:calc(var(--radius-md) - 3px);border:none;background:transparent;font-size:13px;font-weight:600;color:var(--color-text-2);}
+.audience-toggle button.active{background:var(--color-surface);color:var(--color-text);box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:var(--color-text-3);font-size:12px;}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--color-border);}
+.oauth-btn{width:100%;border:1px solid var(--color-border);background:var(--color-surface);border-radius:var(--radius-sm);
+  padding:10px 14px;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.oauth-btn:hover{border-color:var(--color-text-3);}
+.login-error{color:var(--color-error);font-size:12.5px;margin-top:8px;display:none;}
+.login-error.show{display:block;}
+.demo-row{margin-top:20px;padding-top:16px;border-top:1px dashed var(--color-border);text-align:center;}
+.demo-row .label{font-size:11px;color:var(--color-text-3);margin-bottom:8px;}
+.demo-row .btns{display:flex;gap:8px;}
+
+/* ---------- APP SHELL ---------- */
+#app{display:none;}
+.nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  background:var(--color-glass);border-bottom:1px solid var(--color-border);}
+.nav-inner{display:flex;align-items:center;gap:24px;padding:13px 32px;max-width:1400px;margin:0 auto;}
+.wordmark{font-family:var(--font-display);font-weight:560;font-size:18px;letter-spacing:-.01em;white-space:nowrap;display:flex;align-items:center;gap:8px;}
+.wordmark .crest{width:24px;height:24px;border-radius:6px;background:var(--color-primary);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-family:var(--font-display);font-size:12px;font-weight:620;}
+.nav-links{display:flex;gap:20px;font-size:14px;font-weight:500;color:var(--color-text-2);flex:1;}
+.nav-links a{padding:6px 2px;border-bottom:2px solid transparent;}
+.nav-links a.active{color:var(--color-text);border-color:var(--color-primary);}
+.nav-actions{display:flex;align-items:center;gap:12px;}
+.role-pill{font-size:11px;font-weight:700;color:var(--color-steel-dark);background:var(--color-steel-soft);padding:4px 10px;border-radius:var(--radius-lg);}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--color-steel);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:600;font-family:var(--font-display);}
+.icon-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--color-border);background:var(--color-surface);display:flex;align-items:center;justify-content:center;font-size:14px;}
+
+/* ---------- STUDENT VIEW ---------- */
+.hero{padding:34px 0 6px;}
+.hero-greeting{font-family:var(--font-display);font-size:clamp(24px,3.6vw,34px);font-weight:560;margin:0 0 4px;}
+.hero-sub{color:var(--color-text-2);font-size:14.5px;margin:0 0 20px;}
+.hero-search{display:flex;align-items:center;gap:10px;background:var(--color-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:13px 17px;box-shadow:var(--shadow-glass);max-width:600px;}
+.hero-search input{border:none;background:transparent;flex:1;font-size:14.5px;outline:none;}
+.tabbar{display:flex;gap:22px;border-bottom:1px solid var(--color-border);margin:22px 0 20px;overflow-x:auto;}
+.tab{padding:9px 2px;font-size:13.5px;font-weight:600;color:var(--color-text-3);border-bottom:2px solid transparent;white-space:nowrap;}
+.tab.active{color:var(--color-text);border-color:var(--color-primary);}
+.empty-state{border:1.5px dashed var(--color-border);border-radius:var(--radius-lg);padding:40px 24px;text-align:center;color:var(--color-text-2);}
+.empty-state .icon{font-size:26px;margin-bottom:10px;}
+.empty-state h4{font-family:var(--font-display);font-size:17px;margin:0 0 6px;color:var(--color-text);}
+.empty-state p{font-size:13.5px;margin:0 0 14px;}
+.grid-books{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px 16px;}
+.book-card{cursor:pointer;}
+.book-cover-wrap{position:relative;border-radius:var(--radius-md);overflow:hidden;aspect-ratio:2/3;box-shadow:var(--shadow-card);background:var(--color-silver-soft);}
+.fallback-cover{width:100%;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;background:linear-gradient(160deg,var(--color-steel) 0%,var(--color-black) 130%);color:#fff;}
+.fallback-cover .t{font-family:var(--font-display);font-size:13.5px;font-weight:600;line-height:1.25;}
+.fallback-cover .a{font-size:10.5px;opacity:.75;margin-top:4px;}
+.book-meta{margin-top:9px;} .book-meta .title{font-size:13.5px;font-weight:600;} .book-meta .author{font-size:12px;color:var(--color-text-2);margin-top:2px;}
+.avail-row{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-text-3);margin-top:4px;}
+.avail-dot{width:6px;height:6px;border-radius:50%;background:var(--color-success);}
+.dash-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:18px 0 28px;}
+.dash-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:16px;}
+.dash-card .n{font-family:var(--font-display);font-size:26px;font-weight:560;}
+.dash-card .l{font-size:12px;color:var(--color-text-2);margin-top:2px;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text-3);padding:10px 12px;border-bottom:1px solid var(--color-border);}
+td{padding:11px 12px;border-bottom:1px solid var(--color-border);}
+tr:last-child td{border-bottom:none;}
+.status-pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:var(--radius-lg);}
+.status-pill.active{background:var(--color-steel-soft);color:var(--color-steel-dark);}
+.status-pill.overdue{background:#FBE4E1;color:var(--color-error);}
+.status-pill.ready{background:var(--color-primary-soft);color:var(--color-primary);}
+
+/* ---------- LIBRARIAN SHELL ---------- */
+#librarianView{display:flex;}
+.admin-sidebar{width:220px;flex-shrink:0;border-right:1px solid var(--color-border);min-height:calc(100vh - 60px);padding:22px 14px;position:sticky;top:60px;align-self:flex-start;}
+.admin-sidebar .section-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--color-text-3);margin:16px 10px 8px;}
+.admin-nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);font-size:13.5px;font-weight:500;color:var(--color-text-2);}
+.admin-nav-item.active{background:var(--color-primary-soft);color:var(--color-primary);font-weight:600;}
+.admin-nav-item:hover{background:var(--color-silver-soft);}
+.admin-main{flex:1;padding:28px 32px;max-width:1180px;}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.admin-header h2{font-family:var(--font-display);font-size:23px;font-weight:560;margin:0;}
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;}
+.integration-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--color-border);}
+.integration-row:last-child{border:none;}
+.integration-name{font-weight:600;font-size:14px;}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+.status-dot.connected{background:var(--color-success);} .status-dot.degraded{background:var(--color-warning);}
+.status-dot.disabled,.status-dot.failed{background:var(--color-text-3);}
+.two-col{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;}
+@media (max-width:900px){.two-col{grid-template-columns:1fr;} #librarianView{flex-direction:column;} .admin-sidebar{width:100%;position:static;min-height:auto;display:flex;flex-wrap:wrap;gap:4px;}}
+.toggle{width:40px;height:22px;border-radius:11px;background:var(--color-silver-soft);position:relative;border:1px solid var(--color-border);flex-shrink:0;}
+.toggle.on{background:var(--color-primary);}
+.toggle .knob{width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .15s var(--ease);box-shadow:0 1px 2px rgba(0,0,0,.2);}
+.toggle.on .knob{left:20px;}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--color-border);}
+.setting-row:last-child{border:none;}
+.setting-row .t{font-size:13.5px;font-weight:600;} .setting-row .d{font-size:12px;color:var(--color-text-2);margin-top:2px;}
+.csv-drop{border:1.5px dashed var(--color-border);border-radius:var(--radius-md);padding:28px;text-align:center;color:var(--color-text-2);font-size:13.5px;margin-bottom:16px;}
+</style>
+</head>
+<body>
+
+<!-- ============= LOGIN ============= -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-crest">A</div>
+    <h1>Abingdon School Library</h1>
+    <div class="sub">Sign in to your account</div>
+    <div class="audience-toggle">
+      <button class="active" onclick="setAudience('student', this)">Student</button>
+      <button onclick="setAudience('staff', this)">Staff &amp; Librarian</button>
+    </div>
+
+    <form id="passwordForm" onsubmit="return handlePasswordLogin(event)">
+      <div class="field"><label for="loginEmail">School email or username</label><input type="text" id="loginEmail" placeholder="j.taylor@abingdon.org.uk" required></div>
+      <div class="field"><label for="loginPass">Password</label><input type="password" id="loginPass" placeholder="••••••••" required></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" type="submit">Sign in</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+
+    <div class="divider">or continue with</div>
+    <button class="oauth-btn" onclick="handleGoogleLogin()">
+      <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 35.5 24 35.5c-6.4 0-11.6-5.2-11.6-11.6S17.6 12.3 24 12.3c2.9 0 5.6 1.1 7.6 2.9l5.7-5.7C33.6 6.1 29 4.2 24 4.2 12.9 4.2 4 13.1 4 24.2s8.9 20 20 20c11.5 0 19.1-8.1 19.1-19.5 0-1.4-.2-2.6-.5-4.2z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.8 18.9 12.3 24 12.3c2.9 0 5.6 1.1 7.6 2.9l5.7-5.7C33.6 6.1 29 4.2 24 4.2c-7.6 0-14.1 4.3-17.4 10.5z"/><path fill="#4CAF50" d="M24 44.2c5 0 9.5-1.9 13-5l-6-5c-2 1.5-4.5 2.4-7 2.4-5.3 0-9.7-3-11.4-7.2l-6.5 5C9.9 39.9 16.4 44.2 24 44.2z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.3 4.1-4.2 5.4l6 5c-.4.4 6.9-5 6.9-14.4 0-1.4-.2-2.6-.5-4.2z"/></svg>
+      Continue with Google
+    </button>
+    <button class="oauth-btn" onclick="handlePasskeyLogin()">
+      <span style="font-size:15px;">🔐</span> Sign in with a passkey
+    </button>
+    <div style="font-size:11.5px;color:var(--color-text-3);margin-top:4px;">Passkeys (Face ID, Touch ID, Windows Hello) can be set up from Profile → Security once you're signed in.</div>
+
+    <div class="demo-row">
+      <div class="label">DEMO MODE — no backend connected, so every sign-in path above lands here too</div>
+      <div class="btns">
+        <button class="btn btn-outline" style="flex:1;justify-content:center;" onclick="demoLogin('student')">Continue as Student</button>
+        <button class="btn btn-outline" style="flex:1;justify-content:center;" onclick="demoLogin('librarian')">Continue as Librarian</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============= APP ============= -->
+<div id="app">
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="wordmark"><span class="crest">A</span> Abingdon Library</div>
+      <div class="nav-links" id="studentNavLinks">
+        <a href="#" class="active" onclick="showStudentTab('home',this)">Home</a>
+        <a href="#" onclick="showStudentTab('catalogue',this)">Catalogue</a>
+        <a href="#" onclick="showStudentTab('mylibrary',this)">My Library</a>
+        <a href="#" onclick="showStudentTab('lists',this)">Reading Lists</a>
+      </div>
+      <div class="nav-actions">
+        <span class="role-pill" id="rolePill">STUDENT</span>
+        <button class="icon-btn" onclick="switchRole()" title="Switch demo role">⇄</button>
+        <div class="avatar" id="avatarInitials">JT</div>
+        <button class="icon-btn" onclick="logout()" title="Sign out">⏻</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- STUDENT VIEW -->
+  <div id="studentView" class="container">
+    <div id="tab-home">
+      <section class="hero">
+        <h1 class="hero-greeting">Good afternoon, James.</h1>
+        <p class="hero-sub">What would you like to read?</p>
+        <div class="hero-search">🔍 <input placeholder="Search books, authors, topics or ISBNs…"></div>
+      </section>
+      <div id="homeEmpty"></div>
+      <div id="homeRails"></div>
+    </div>
+
+    <div id="tab-catalogue" class="hidden">
+      <h2 style="font-family:var(--font-display);font-weight:560;margin:26px 0 4px;">Catalogue</h2>
+      <div id="catalogueEmpty"></div>
+      <div class="grid-books" id="catalogueGrid"></div>
+    </div>
+
+    <div id="tab-mylibrary" class="hidden">
+      <h2 style="font-family:var(--font-display);font-weight:560;margin:26px 0 14px;">My Library</h2>
+      <div class="tabbar">
+        <div class="tab active" onclick="setMyLibTab('loans',this)">Currently Borrowed</div>
+        <div class="tab" onclick="setMyLibTab('reservations',this)">Reservations</div>
+        <div class="tab" onclick="setMyLibTab('favourites',this)">Favourites</div>
+      </div>
+      <div id="mylibContent"></div>
+    </div>
+
+    <div id="tab-lists" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin:26px 0 14px;">
+        <h2 style="font-family:var(--font-display);font-weight:560;margin:0;">Reading Lists</h2>
+        <button class="btn btn-primary" onclick="createReadingList()">+ New list</button>
+      </div>
+      <div id="listsContent"></div>
+    </div>
+  </div>
+
+  <!-- LIBRARIAN VIEW -->
+  <div id="librarianView" class="hidden">
+    <div class="admin-sidebar">
+      <div class="section-label">Overview</div>
+      <div class="admin-nav-item active" onclick="showAdminTab('dashboard',this)">📊 Dashboard</div>
+      <div class="section-label">Catalogue</div>
+      <div class="admin-nav-item" onclick="showAdminTab('catalogue',this)">📚 Catalogue</div>
+      <div class="admin-nav-item" onclick="showAdminTab('import',this)">⬆ CSV Import</div>
+      <div class="section-label">Circulation</div>
+      <div class="admin-nav-item" onclick="showAdminTab('loans',this)">🔄 Loans</div>
+      <div class="admin-nav-item" onclick="showAdminTab('reservations',this)">🕓 Reservations</div>
+      <div class="section-label">Community</div>
+      <div class="admin-nav-item" onclick="showAdminTab('users',this)">👥 Users</div>
+      <div class="admin-nav-item" onclick="showAdminTab('reviews',this)">💬 Reviews</div>
+      <div class="admin-nav-item" onclick="showAdminTab('recommendations',this)">✦ Recommendations</div>
+      <div class="section-label">System</div>
+      <div class="admin-nav-item" onclick="showAdminTab('integrations',this)">🔌 Integrations</div>
+      <div class="admin-nav-item" onclick="showAdminTab('ai',this)">🤖 AI Controls</div>
+      <div class="admin-nav-item" onclick="showAdminTab('audit',this)">🛡 Audit Log</div>
+      <div class="admin-nav-item" onclick="showAdminTab('settings',this)">⚙ Settings</div>
+    </div>
+    <div class="admin-main" id="adminMain"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =======================================================================
+   DEMO PERSISTENCE LAYER
+   Everything below reads/writes a single localStorage object as a stand-in
+   for real API calls (see api-spec.md) against schema.sql. Every function
+   that would be a network call is named api_* and commented with the real
+   endpoint it corresponds to, so swapping this for `fetch()` calls to a
+   real backend is a mechanical change, not a redesign.
+   ======================================================================= */
+const DB_KEY = 'abingdon_library_demo_v1';
+function loadDB(){
+  try{ return JSON.parse(localStorage.getItem(DB_KEY)) || freshDB(); }catch(e){ return freshDB(); }
+}
+function freshDB(){
+  return { books: [], loans: [], reservations: [], favourites: [], readingLists: [], reviews: [],
+    users: [
+      {id:'u1', name:'James Taylor', role:'student', email:'j.taylor@abingdon.org.uk'},
+      {id:'u2', name:'Mrs. Alden', role:'librarian', email:'e.alden@abingdon.org.uk'}
+    ] };
+}
+function saveDB(db){ try{ localStorage.setItem(DB_KEY, JSON.stringify(db)); }catch(e){} }
+let db = loadDB();
+
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(window._toastTimer); window._toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ---------------- AUTH ---------------- */
+let audience = 'student';
+function setAudience(a, el){
+  audience=a;
+  document.querySelectorAll('.audience-toggle button').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// TEMPORARY hardcoded gate — see note in chat: hashed so it isn't sitting in plain text in the
+// page source, but this is still obfuscation, not real security — anyone who opens dev tools
+// and reads this script can see the check running and brute-force short credentials against it.
+// Fine for a demo link; replace with the real fetch() call below before this touches real data.
+const HARDCODED_HASH = '767abfa7a0ea9e72d9a07997cc535287d4f75beee5288a9d57fe49b739e514dc';
+async function checkHardcodedLogin(user, pass){
+  const enc = new TextEncoder().encode(user + ':' + pass);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('') === HARDCODED_HASH;
+}
+
+async function handlePasswordLogin(e){
+  e.preventDefault();
+  const email=document.getElementById('loginEmail').value.trim(), password=document.getElementById('loginPass').value;
+  const err=document.getElementById('loginError'); err.classList.remove('show');
+
+  if(await checkHardcodedLogin(email, password)){
+    enterApp('librarian', 'Gabe Horn');
+    return false;
+  }
+
+  try{
+    // Real call — see auth.ts: POST /api/auth/login/password { email, password }
+    const res = await fetch('/api/auth/login/password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    if(!res.ok) throw new Error('Invalid credentials');
+    const {role} = await res.json();
+    enterApp(role, email.split('@')[0]);
+  }catch(err2){
+    err.textContent = "That username/password wasn't recognised. Try demo mode below.";
+    err.classList.add('show');
+  }
+  return false;
+}
+
+async function handleGoogleLogin(){
+  // Real integration point — needs Abingdon's own GOOGLE_CLIENT_ID (see auth.ts):
+  // google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: onGoogleCredential });
+  // google.accounts.id.prompt();
+  if(window.google && google.accounts){
+    // real SDK present — would run the real flow here once GOOGLE_CLIENT_ID is set
+  }
+  toast("No live Google OAuth client is configured yet, so this is signing you in with demo access.");
+  enterApp('librarian', 'Gabe Horn');
+}
+
+async function handlePasskeyLogin(){
+  if(!window.PublicKeyCredential){ toast('This browser does not support passkeys.'); return; }
+  try{
+    // Real flow: fetch challenge from POST /api/auth/passkey/login/options,
+    // then navigator.credentials.get({ publicKey: options }), then verify server-side.
+    const res = await fetch('/api/auth/passkey/login/options',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:document.getElementById('loginEmail').value})});
+    if(!res.ok) throw new Error('no backend');
+  }catch(e){
+    toast('No live passkey backend is connected yet, so this is signing you in with demo access.');
+    enterApp('librarian', 'Gabe Horn');
+  }
+}
+
+function demoLogin(role){ enterApp(role, role==='student'?'James Taylor':'Mrs. Alden'); }
+
+function enterApp(role, name){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('rolePill').textContent = role.toUpperCase();
+  document.getElementById('avatarInitials').textContent = (name||'U').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  if(role==='librarian'||role==='staff'){
+    document.getElementById('studentView').classList.add('hidden');
+    document.getElementById('librarianView').classList.remove('hidden');
+    document.getElementById('studentNavLinks').style.visibility='hidden';
+    renderAdminTab('dashboard');
+  } else {
+    document.getElementById('studentView').classList.remove('hidden');
+    document.getElementById('librarianView').classList.add('hidden');
+    document.getElementById('studentNavLinks').style.visibility='visible';
+    renderStudentHome(); renderCatalogueTab(); renderMyLibrary('loans'); renderLists();
+  }
+}
+function logout(){
+  // Real call: POST /api/auth/logout (destroys session)
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+}
+function switchRole(){
+  const current = document.getElementById('rolePill').textContent.toLowerCase();
+  enterApp(current==='student'?'librarian':'student', current==='student'?'Mrs. Alden':'James Taylor');
+  toast('Demo-only role switch — a real account has exactly one role.');
+}
+
+/* ---------------- STUDENT: nav ---------------- */
+function showStudentTab(name, el){
+  document.querySelectorAll('#studentNavLinks a').forEach(a=>a.classList.remove('active'));
+  el.classList.add('active');
+  ['home','catalogue','mylibrary','lists'].forEach(t=>document.getElementById('tab-'+t).classList.toggle('hidden', t!==name));
+}
+
+function emptyStateHTML(icon,title,body,cta,ctaFn){
+  return `<div class="empty-state"><div class="icon">${icon}</div><h4>${title}</h4><p>${body}</p>
+    ${cta?`<button class="btn btn-primary" onclick="${ctaFn}">${cta}</button>`:''}</div>`;
+}
+
+function renderStudentHome(){
+  const el=document.getElementById('homeEmpty'), rails=document.getElementById('homeRails');
+  if(db.books.length===0){
+    el.innerHTML = emptyStateHTML('📚','The catalogue is being set up','Once the Librarian adds or imports books, your personalised recommendations, staff picks and new arrivals will appear here.','',null);
+    rails.innerHTML='';
+  } else {
+    el.innerHTML='';
+    rails.innerHTML = `<div class="grid-books">${db.books.map(bookCard).join('')}</div>`;
+  }
+}
+function renderCatalogueTab(){
+  const el=document.getElementById('catalogueEmpty'), grid=document.getElementById('catalogueGrid');
+  if(db.books.length===0){
+    el.innerHTML = emptyStateHTML('🔍','No books in the catalogue yet','Ask your Librarian to add books or import a CSV from the Librarian portal.','',null);
+    grid.innerHTML='';
+  } else { el.innerHTML=''; grid.innerHTML = db.books.map(bookCard).join(''); }
+}
+function coverHTML(b){ return b.cover?`<img src="${b.cover}" style="width:100%;height:100%;object-fit:cover;" alt="">`:`<div class="fallback-cover"><div class="t">${b.title}</div><div class="a">${b.author}</div></div>`; }
+function bookCard(b){
+  return `<div class="book-card"><div class="book-cover-wrap">${coverHTML(b)}</div>
+    <div class="book-meta"><div class="title">${b.title}</div><div class="author">${b.author}</div>
+    <div class="avail-row"><span class="avail-dot"></span>${b.copies} ${b.copies==1?'copy':'copies'}</div></div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <button class="btn btn-primary" style="flex:1;justify-content:center;padding:6px 0;font-size:12px;" onclick="api_borrow('${b.id}')">Borrow</button>
+      <button class="btn btn-outline" style="padding:6px 8px;font-size:12px;" onclick="api_favourite('${b.id}')">♡</button>
+    </div></div>`;
+}
+// api_borrow ↔ real: POST /reservations or a loan endpoint depending on availability
+function api_borrow(id){
+  const b=db.books.find(x=>x.id===id); if(!b) return;
+  db.loans.push({id:crypto.randomUUID(), bookId:id, title:b.title, borrowedAt:Date.now(), dueAt:Date.now()+1000*60*60*24*14, status:'active'});
+  saveDB(db); toast(`Borrowed “${b.title}”`); renderMyLibrary('loans');
+}
+function api_favourite(id){
+  const b=db.books.find(x=>x.id===id); if(!b) return;
+  if(!db.favourites.find(f=>f.bookId===id)){ db.favourites.push({bookId:id,title:b.title,author:b.author,cover:b.cover}); saveDB(db); toast(`Saved “${b.title}”`); }
+}
+
+/* ---------------- STUDENT: My Library ---------------- */
+function setMyLibTab(t,el){ document.querySelectorAll('#tab-mylibrary .tab').forEach(x=>x.classList.remove('active')); el.classList.add('active'); renderMyLibrary(t); }
+function renderMyLibrary(t){
+  const c=document.getElementById('mylibContent');
+  if(t==='loans'){
+    c.innerHTML = db.loans.length ? `<table><tr><th>Title</th><th>Borrowed</th><th>Due</th><th>Status</th></tr>${
+      db.loans.map(l=>`<tr><td>${l.title}</td><td>${new Date(l.borrowedAt).toLocaleDateString()}</td><td>${new Date(l.dueAt).toLocaleDateString()}</td><td><span class="status-pill active">On loan</span></td></tr>`).join('')}</table>`
+      : emptyStateHTML('📖','Nothing borrowed yet','Books you borrow from the catalogue will show up here with their due date.','',null);
+  } else if(t==='reservations'){
+    c.innerHTML = db.reservations.length ? `<table><tr><th>Title</th><th>Queued</th><th>Status</th></tr>${
+      db.reservations.map(r=>`<tr><td>${r.title}</td><td>${new Date(r.queuedAt).toLocaleDateString()}</td><td><span class="status-pill ready">Queued</span></td></tr>`).join('')}</table>`
+      : emptyStateHTML('🕓','No reservations','Reserve a book that\\'s currently unavailable and it will appear here.','',null);
+  } else {
+    c.innerHTML = db.favourites.length ? `<div class="grid-books">${db.favourites.map(f=>`<div class="book-card"><div class="book-cover-wrap">${coverHTML({title:f.title,author:f.author,cover:f.cover})}</div><div class="book-meta"><div class="title">${f.title}</div><div class="author">${f.author}</div></div></div>`).join('')}</div>`
+      : emptyStateHTML('♡','Your reading shelf is empty','Save books here so you can find them later.','Browse the catalogue',"showStudentTab('catalogue', document.querySelectorAll('#studentNavLinks a')[1])");
+  }
+}
+function renderLists(){
+  const c=document.getElementById('listsContent');
+  c.innerHTML = db.readingLists.length ? db.readingLists.map(l=>`<div class="card"><strong>${l.title}</strong><div style="font-size:12.5px;color:var(--color-text-2);margin-top:4px;">${l.items.length} book(s) · ${l.visibility}</div></div>`).join('')
+    : emptyStateHTML('📋','No reading lists yet','Create a private list — "Summer Reading", "Sci-Fi", whatever helps you keep track.','+ New list','createReadingList()');
+}
+function createReadingList(){
+  const title=prompt('Reading list name:'); if(!title) return;
+  db.readingLists.push({id:crypto.randomUUID(),title,visibility:'private',items:[]}); saveDB(db); renderLists(); toast('Reading list created');
+}
+
+/* ---------------- LIBRARIAN ---------------- */
+function showAdminTab(name, el){
+  document.querySelectorAll('.admin-nav-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  renderAdminTab(name);
+}
+function renderAdminTab(name){
+  const main=document.getElementById('adminMain');
+  const renderers={dashboard:adminDashboard, catalogue:adminCatalogue, import:adminImport, loans:adminLoans,
+    reservations:adminReservations, users:adminUsers, reviews:adminReviews, recommendations:adminRecs,
+    integrations:adminIntegrations, ai:adminAI, audit:adminAudit, settings:adminSettings};
+  main.innerHTML = renderers[name]();
+}
+function adminDashboard(){
+  return `<div class="admin-header"><h2>Dashboard</h2></div>
+  <div class="notice">Demo persistence — this data lives in your browser only. Deploy against schema.sql + api-spec.md for the real thing.</div>
+  <div class="dash-cards">
+    <div class="dash-card"><div class="n">${db.books.length}</div><div class="l">Total books</div></div>
+    <div class="dash-card"><div class="n">${db.loans.filter(l=>l.status==='active').length}</div><div class="l">On loan</div></div>
+    <div class="dash-card"><div class="n">${db.reservations.length}</div><div class="l">Reservations</div></div>
+    <div class="dash-card"><div class="n">${db.users.length}</div><div class="l">Registered users</div></div>
+    <div class="dash-card"><div class="n">0</div><div class="l">Overdue</div></div>
+    <div class="dash-card"><div class="n">${db.reviews.filter(r=>r.status==='pending').length}</div><div class="l">Reviews to moderate</div></div>
+  </div>
+  <div class="card"><strong>Integration status</strong>${integrationRows()}</div>`;
+}
+function integrationRows(){
+  const items=[['VLEbooks','disabled'],['Browns Books','disabled'],['Amazon Business','disabled'],['Gemini AI','disabled']];
+  return items.map(([n,s])=>`<div class="integration-row"><span class="integration-name"><span class="status-dot ${s}"></span>${n}</span><span style="font-size:12px;color:var(--color-text-3);text-transform:capitalize;">${s} — needs credentials</span></div>`).join('');
+}
+function adminCatalogue(){
+  const rows = db.books.map(b=>`<tr><td>${b.title}</td><td>${b.author}</td><td>${b.isbn||'—'}</td><td>${b.copies}</td>
+    <td><button class="btn btn-tertiary" onclick="removeBook('${b.id}')">Remove</button></td></tr>`).join('');
+  return `<div class="admin-header"><h2>Catalogue</h2><button class="btn btn-primary" onclick="toggleAddBook()">+ Add book</button></div>
+    <div id="addBookForm" class="card hidden">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="field"><label>Title</label><input id="nbTitle" type="text" placeholder="Never Let Me Go"></div>
+        <div class="field"><label>Author</label><input id="nbAuthor" type="text" placeholder="Kazuo Ishiguro"></div>
+        <div class="field"><label>ISBN-13</label><input id="nbIsbn" type="text" placeholder="9780571273188"></div>
+        <div class="field"><label>Copies</label><input id="nbCopies" type="number" value="1" min="1"></div>
+        <div class="field" style="grid-column:1/-1;"><label>Cover image URL (optional)</label><input id="nbCover" type="text" placeholder="https://…"></div>
+      </div>
+      <button class="btn btn-primary" onclick="addBook()">Add to catalogue</button>
+      <button class="btn btn-tertiary" onclick="toggleAddBook()">Cancel</button>
+    </div>
+    ${db.books.length ? `<table><tr><th>Title</th><th>Author</th><th>ISBN</th><th>Copies</th><th></th></tr>${rows}</table>`
+      : emptyStateHTML('📚','Catalogue is empty','Add your first book, or use CSV Import to bring in your existing collection.','+ Add book','toggleAddBook()')}`;
+}
+function toggleAddBook(){ document.getElementById('addBookForm').classList.toggle('hidden'); }
+function addBook(){
+  const title=document.getElementById('nbTitle').value.trim(), author=document.getElementById('nbAuthor').value.trim();
+  if(!title||!author){ toast('Title and author are required'); return; }
+  db.books.push({id:crypto.randomUUID(), title, author, isbn:document.getElementById('nbIsbn').value.trim(),
+    copies:Number(document.getElementById('nbCopies').value)||1, cover:document.getElementById('nbCover').value.trim()});
+  saveDB(db); toast('Book added to catalogue'); renderAdminTab('catalogue');
+}
+function removeBook(id){ db.books = db.books.filter(b=>b.id!==id); saveDB(db); renderAdminTab('catalogue'); toast('Book removed'); }
+
+function adminImport(){
+  return `<div class="admin-header"><h2>CSV Import</h2></div>
+  <div class="card">
+    <div class="csv-drop">Drop a CSV here, or paste rows below.<br><span style="font-size:11.5px;">Expected headers: title,author,isbn,copies</span></div>
+    <textarea id="csvInput" rows="6" placeholder="title,author,isbn,copies&#10;Never Let Me Go,Kazuo Ishiguro,9780571273188,2"></textarea>
+    <div style="margin-top:12px;display:flex;gap:8px;">
+      <button class="btn btn-secondary" onclick="previewCSV()">Preview</button>
+      <button class="btn btn-primary" onclick="commitCSV()">Import</button>
+    </div>
+    <div id="csvPreview" style="margin-top:16px;"></div>
+  </div>`;
+}
+function parseCSV(){
+  const raw=document.getElementById('csvInput').value.trim(); if(!raw) return [];
+  const lines=raw.split(/\r?\n/); const headers=lines[0].split(',').map(h=>h.trim());
+  return lines.slice(1).filter(l=>l.trim()).map(l=>{
+    const parts=l.split(','); const row={}; headers.forEach((h,i)=>row[h]=(parts[i]||'').trim()); return row;
+  });
+}
+function previewCSV(){
+  const rows=parseCSV();
+  const dupes = rows.filter(r=>db.books.some(b=>b.isbn===r.isbn)).length;
+  document.getElementById('csvPreview').innerHTML = rows.length
+    ? `<table><tr><th>Title</th><th>Author</th><th>ISBN</th><th>Copies</th></tr>${rows.map(r=>`<tr><td>${r.title||'—'}</td><td>${r.author||'—'}</td><td>${r.isbn||'—'}</td><td>${r.copies||1}</td></tr>`).join('')}</table>
+      <p style="font-size:12.5px;color:var(--color-text-2);margin-top:8px;">${rows.length} row(s) parsed · ${dupes} duplicate ISBN(s) will be skipped.</p>`
+    : `<p style="font-size:13px;color:var(--color-text-2);">Nothing to preview yet.</p>`;
+}
+function commitCSV(){
+  const rows=parseCSV(); let added=0, dup=0, failed=0;
+  rows.forEach(r=>{
+    if(!r.title||!r.author){ failed++; return; }
+    if(db.books.some(b=>b.isbn===r.isbn)){ dup++; return; }
+    db.books.push({id:crypto.randomUUID(), title:r.title, author:r.author, isbn:r.isbn, copies:Number(r.copies)||1, cover:''});
+    added++;
+  });
+  saveDB(db);
+  document.getElementById('csvPreview').innerHTML = `<div class="notice">Import complete — <strong>${added} added</strong>, ${dup} duplicates skipped, ${failed} failed validation.</div>`;
+  toast('CSV import complete');
+}
+
+function adminLoans(){
+  return `<div class="admin-header"><h2>Loans</h2></div>
+    ${db.loans.length ? `<table><tr><th>Title</th><th>Due</th><th>Status</th><th></th></tr>${
+      db.loans.map(l=>`<tr><td>${l.title}</td><td>${new Date(l.dueAt).toLocaleDateString()}</td><td><span class="status-pill active">On loan</span></td>
+      <td><button class="btn btn-tertiary" onclick="returnLoan('${l.id}')">Mark returned</button></td></tr>`).join('')}</table>`
+      : emptyStateHTML('🔄','No active loans','Loans made by students will appear here.','',null)}`;
+}
+function returnLoan(id){ db.loans=db.loans.filter(l=>l.id!==id); saveDB(db); renderAdminTab('loans'); toast('Marked returned'); }
+function adminReservations(){
+  return `<div class="admin-header"><h2>Reservations</h2></div>${db.reservations.length?'':emptyStateHTML('🕓','No reservations','Student reservations will queue here for fulfilment.','',null)}`;
+}
+function adminUsers(){
+  return `<div class="admin-header"><h2>Users</h2></div>
+    <table><tr><th>Name</th><th>Email</th><th>Role</th></tr>${db.users.map(u=>`<tr><td>${u.name}</td><td>${u.email}</td><td style="text-transform:capitalize;">${u.role}</td></tr>`).join('')}</table>
+    <div class="notice" style="margin-top:14px;">Full roster is provisioned via school SSO (Entra ID / Google Workspace) — see architecture.md §41. This table shows accounts on file.</div>`;
+}
+function adminReviews(){
+  return `<div class="admin-header"><h2>Reviews Moderation</h2></div>${emptyStateHTML('💬','No reviews awaiting moderation','Student reviews go into this queue before they\\'re published.','',null)}`;
+}
+function adminRecs(){
+  return `<div class="admin-header"><h2>Recommendation Controls</h2></div>
+  <div class="card">
+    ${['New-book boost','Staff-pick boost','Availability preference','Popularity window: 30 days'].map(s=>`
+    <div class="setting-row"><div><div class="t">${s}</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="knob"></div></div></div>`).join('')}
+  </div>`;
+}
+function adminIntegrations(){
+  return `<div class="admin-header"><h2>Integrations</h2></div>
+  <div class="card">${integrationRows()}</div>
+  <div class="notice warn">VLEbooks, Browns Books and Amazon Business each need real provider documentation and credentials before they can connect — see the adapter interfaces in adapters.ts. Nothing here is a working connection yet.</div>`;
+}
+function adminAI(){
+  return `<div class="admin-header"><h2>AI Controls</h2></div>
+  <div class="card">
+    <div class="setting-row"><div><div class="t">Gemini assistant</div><div class="d">Currently disabled — no API credentials configured</div></div><div class="toggle" onclick="toast('Requires a configured Gemini API key server-side first')"><div class="knob"></div></div></div>
+    <div class="setting-row"><div><div class="t">Catalogue-only mode</div><div class="d">AI may only answer from the Abingdon catalogue</div></div><div class="toggle on"><div class="knob"></div></div></div>
+    <div class="setting-row"><div><div class="t">Conversation retention</div><div class="d">30 days (placeholder — pending DPO sign-off)</div></div></div>
+  </div>`;
+}
+function adminAudit(){
+  return `<div class="admin-header"><h2>Audit Log</h2></div>${emptyStateHTML('🛡','No actions logged yet','Catalogue edits, imports and AI setting changes will be recorded here.','',null)}`;
+}
+function adminSettings(){
+  return `<div class="admin-header"><h2>System Settings</h2></div>
+  <div class="card">
+    ${['Student reviews enabled','Student ratings enabled','Personalised recommendations','Reading history tracking','Analytics'].map(s=>`
+    <div class="setting-row"><div><div class="t">${s}</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="knob"></div></div></div>`).join('')}
+  </div>`;
+}
+</script>
+</body>
+</html>
